@@ -1,0 +1,15 @@
+﻿@page "/cv"
+@using Cv.Services
+@using Cv.Models
+@inject ISkillService _skillService
+@inject IProjectService _projectService
+
+<iframe src="https://localhost:7296" width="100%" height="800px" frameborder="0" @onload="LoadData"></iframe>
+
+@code {
+    private async Task LoadData()
+    {
+        var skills = await _skillService.GetSkillsAsync();
+        var projects = await _projectService.GetProjectsAsync();
+    }
+}

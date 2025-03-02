@@ -19,10 +19,11 @@
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
+            <NavLink class="nav-link" href="cv">
+                <span class="oi oi-person" aria-hidden="true"></span> View CV
             </NavLink>
         </div>
+
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="weather">
@@ -36,13 +37,25 @@
             </NavLink>
         </div>
 
-        <AuthorizeView>
+        <AuthorizeView Context="mainContext">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                    <NavLink class="nav-link" href="cv">
+                        <span class="bi bi-person-vcard" aria-hidden="true"></span> View CV
                     </NavLink>
                 </div>
+
+
+                <AuthorizeView Roles="Admin" Context="adminContext">
+                    <Authorized>
+                        <div class="nav-item px-3">
+                            <NavLink class="nav-link" href="Admin/ManageData">
+                                <span class="bi bi-database-fill" aria-hidden="true"></span> Manage CV Data
+                            </NavLink>
+                        </div>
+                    </Authorized>
+                </AuthorizeView>
+
                 <div class="nav-item px-3">
                     <form action="Account/Logout" method="post">
                         <AntiforgeryToken />

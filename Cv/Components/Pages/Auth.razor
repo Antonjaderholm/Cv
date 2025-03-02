@@ -1,13 +1,18 @@
 ﻿@page "/auth"
-
 @using Microsoft.AspNetCore.Authorization
-
-@attribute [Authorize]
+@attribute [Authorize(Roles = "ADMIN")]  // Changed to match database role
 
 <PageTitle>Auth</PageTitle>
 
-<h1>You are authenticated</h1>
+<h1>Edit Page</h1>
 
-<AuthorizeView>
-    Hello @context.User.Identity?.Name!
+<AuthorizeView Roles="ADMIN"> 
+    <Authorized>
+        Hello @context.User.Identity?.Name!
+    </Authorized>
+    <NotAuthorized>
+        <div class="alert alert-warning">
+            Sorry, you need admin privileges to access this content.
+        </div>
+    </NotAuthorized>
 </AuthorizeView>

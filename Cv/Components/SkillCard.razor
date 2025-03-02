@@ -1,0 +1,25 @@
+﻿@using Cv.Models
+
+<div class="skill-card">
+    <h3>@Skill.Name</h3>
+    <div class="experience">
+        <span>Experience: @Skill.YearsExperience years</span>
+    </div>
+    <div class="skill-level">
+        <div class="progress">
+            <div class="progress-bar"
+                 role="progressbar"
+                 style="width: @Skill.SkillLevel%"
+                 aria-valuenow="@Skill.SkillLevel"
+                 aria-valuemin="0"
+                 aria-valuemax="100">
+                @Skill.SkillLevel%
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Skill Skill { get; set; }
+}

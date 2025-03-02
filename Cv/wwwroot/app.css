@@ -49,3 +49,28 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+.skill-card {
+    margin-bottom: 1rem;
+}
+
+.card {
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+.btn-danger {
+    margin-left: 1rem;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-control {
+    margin-bottom: 1rem;
+}
