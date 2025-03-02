@@ -2,22 +2,40 @@
 
 <div class="skill-card">
     <h3>@Skill.Name</h3>
-    <div class="experience">
-        <span>Experience: @Skill.YearsExperience years</span>
-    </div>
     <div class="skill-level">
         <div class="progress">
-            <div class="progress-bar"
-                 role="progressbar"
-                 style="width: @Skill.SkillLevel%"
-                 aria-valuenow="@Skill.SkillLevel"
-                 aria-valuemin="0"
-                 aria-valuemax="100">
-                @Skill.SkillLevel%
+            <div class="progress-bar" style="width: @(Skill.SkillLevel * 20)%">
+                @Skill.SkillLevel/5
             </div>
         </div>
     </div>
+    <p>Experience: @Skill.YearsExperience years</p>
 </div>
+
+<style>
+    .skill-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .progress {
+        height: 20px;
+        background: #f0f0f0;
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 1rem 0;
+    }
+
+    .progress-bar {
+        height: 100%;
+        background: #007bff;
+        color: white;
+        text-align: center;
+        line-height: 20px;
+    }
+</style>
 
 @code {
     [Parameter]

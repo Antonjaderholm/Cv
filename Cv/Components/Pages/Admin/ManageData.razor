@@ -1,5 +1,5 @@
-﻿@using Cv.Models
-@page "/Admin/ManageData"
+﻿@page "/Admin/ManageData"
+@using Cv.Models
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 @inject Labb3CVClient Client
@@ -9,7 +9,7 @@
 <div class="container mt-4">
     <h3>Manage CV Data</h3>
 
-    <!-- Skills Section -->
+    <!-- Skills Section -->ccccccc
     <div class="row">
         <div class="col-md-6">
             <h4>Skills</h4>
@@ -32,7 +32,7 @@
             }
         </div>
 
-        <!-- Projects Section -->
+        <!-- Projects Section --> 
         <div class="col-md-6">
             <h4>Projects</h4>
             <div class="mb-3">
@@ -60,13 +60,13 @@
 </div>
 
 @code {
-    private List<Skill> skills;
-    private List<Project> projects;
-    private string newSkillName;
+    private List<Skill> skills = new();
+    private List<Project> projects = new();
+    private string newSkillName = "";
     private int newSkillLevel;
-    private string newProjectTitle;
-    private string newProjectDescription;
-    private string newProjectGitHubUrl;
+    private string newProjectTitle = "";
+    private string newProjectDescription = "";
+    private string newProjectGitHubUrl = "";
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,104 +75,55 @@
 
     private async Task LoadData()
     {
-        try
-        {
-            Console.WriteLine("Starting LoadData");
-            skills = await Client.GetSkillsAsync();
-            projects = await Client.GetProjectsAsync();
-            Console.WriteLine($"Loaded {skills?.Count ?? 0} skills and {projects?.Count ?? 0} projects");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in LoadData: {ex.Message}");
-            throw;
-        }
+        skills = await Client.GetSkillsAsync();
+        projects = await Client.GetProjectsAsync();
+        StateHasChanged();
     }
 
     private async Task AddSkill()
     {
-        Console.WriteLine($"Starting to add skill - Name: {newSkillName}, Level: {newSkillLevel}");
-        var skill = new Skill
-            {
-                Name = newSkillName,
-                SkillLevel = newSkillLevel,
-                YearsExperience = 0
-            };
-
-        try
+        if (!string.IsNullOrWhiteSpace(newSkillName))
         {
-            var result = await Client.AddSkillAsync(skill);
-            Console.WriteLine($"Skill added successfully with ID: {result.Id}");
+            var skill = new Skill
+                {
+                    Name = newSkillName,
+                    SkillLevel = newSkillLevel,
+                    YearsExperience = 0
+                };
+            await Client.AddSkillAsync(skill);
             await LoadData();
-
-            // Clear form
-            newSkillName = string.Empty;
+            newSkillName = "";
             newSkillLevel = 0;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error adding skill: {ex.Message}");
         }
     }
 
     private async Task DeleteSkill(string id)
     {
-        try
-        {
-            Console.WriteLine($"Deleting skill with id: {id}");
-            await Client.DeleteSkillAsync(id);
-            await LoadData();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in DeleteSkill: {ex.Message}");
-            throw;
-        }
+        await Client.DeleteSkillAsync(id);
+        await LoadData();
     }
 
     private async Task AddProject()
     {
-        try
+        if (!string.IsNullOrWhiteSpace(newProjectTitle))
         {
-            if (!string.IsNullOrWhiteSpace(newProjectTitle))
-            {
-                Console.WriteLine($"Starting AddProject with title: {newProjectTitle}");
-
-                var project = new Project
-                    {
-                        Title = newProjectTitle,
-                        Description = newProjectDescription,
-                        GitHubUrl = newProjectGitHubUrl
-                    };
-
-                var response = await Client.AddProjectAsync(project);
-                Console.WriteLine($"API Response received: {response?.Title ?? "null"}");
-
-                await LoadData();
-                newProjectTitle = string.Empty;
-                newProjectDescription = string.Empty;
-                newProjectGitHubUrl = string.Empty;
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in AddProject: {ex.Message}");
-            throw;
+            var project = new Project
+                {
+                    Title = newProjectTitle,
+                    Description = newProjectDescription,
+                    GitHubUrl = newProjectGitHubUrl
+                };
+            await Client.AddProjectAsync(project);
+            await LoadData();
+            newProjectTitle = "";
+            newProjectDescription = "";
+            newProjectGitHubUrl = "";
         }
     }
 
     private async Task DeleteProject(string id)
     {
-        try
-        {
-            Console.WriteLine($"Deleting project with id: {id}");
-            await Client.DeleteProjectAsync(id);
-            await LoadData();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error in DeleteProject: {ex.Message}");
-            throw;
-        }
+        await Client.DeleteProjectAsync(id);
+        await LoadData();
     }
 }

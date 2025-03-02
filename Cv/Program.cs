@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using System.Net.Sockets;
 
 public class Program
 {
@@ -14,51 +13,51 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container
-        builder.Services.AddRazorComponents()
+        ConfigureServices(builder.Services, builder.Configuration);
+
+        var app = builder.Build();
+
+        ConfigureMiddleware(app);
+
+        app.Run();
+    }
+
+    private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+    {
+        // Core Services
+        services.AddRazorComponents()
             .AddInteractiveServerComponents();
 
-        // CORS Configuration
-        builder.Services.AddCors(options =>
-        {
-            options.AddPolicy("AllowBlazor", policy =>
-            {
-                policy.WithOrigins("https://localhost:7296")
-                      .AllowAnyMethod()
-                      .AllowAnyHeader();
-            });
-        });
-
         // MongoDB Configuration
-        builder.Services.AddSingleton<IMongoClient>(sp =>
-            new MongoClient(builder.Configuration.GetConnectionString("MONGODB_URI")));
-        builder.Services.AddScoped<MongoDbContext>();
+        services.AddSingleton<IMongoClient>(sp =>
+            new MongoClient(configuration.GetConnectionString("MONGODB_URI")));
+        services.AddScoped<MongoDbContext>();
 
-        // Client Services for Labb3-CV frontend
-        builder.Services.AddHttpClient<Labb3CVClient>(client =>
+        // CV Services
+        services.AddScoped<ISkillService, SkillService>();
+        services.AddScoped<IProjectService, ProjectService>();
+
+        // HTTP Client Configuration
+        services.AddHttpClient<Labb3CVClient>(client =>
         {
             client.BaseAddress = new Uri("https://localhost:7160/");
         });
-
-        builder.Services.AddScoped<Labb3CVClient>();
-
-        // Services for Skills and Projects
-        builder.Services.AddScoped<ISkillService, SkillService>();
-        builder.Services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<Labb3CVClient>();
 
         // Identity and Authentication
-        builder.Services.AddCascadingAuthenticationState();
-        builder.Services.AddScoped<IdentityUserAccessor>();
-        builder.Services.AddScoped<IdentityRedirectManager>();
-        builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+        services.AddCascadingAuthenticationState();
+        services.AddScoped<IdentityUserAccessor>();
+        services.AddScoped<IdentityRedirectManager>();
+        services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 
         // Database Context
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        var connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        services.AddDbContext<ApplicationDbContext>(options =>
             options.UseSqlServer(connectionString));
 
         // Identity Configuration
-        builder.Services.AddIdentityCore<ApplicationUser>(options =>
+        services.AddIdentityCore<ApplicationUser>(options =>
         {
             options.SignIn.RequireConfirmedAccount = true;
             options.Password.RequireDigit = true;
@@ -70,7 +69,8 @@ public class Program
         .AddSignInManager()
         .AddDefaultTokenProviders();
 
-        builder.Services.AddAuthentication(options =>
+        // Authentication
+        services.AddAuthentication(options =>
         {
             options.DefaultScheme = IdentityConstants.ApplicationScheme;
             options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
@@ -78,22 +78,20 @@ public class Program
         .AddIdentityCookies();
 
         // Authorization
-        builder.Services.AddAuthorization(options =>
+        services.AddAuthorization(options =>
         {
             options.AddPolicy("AdminPolicy", policy =>
                 policy.RequireRole("ADMIN"));
         });
 
-        // Services
-        builder.Services.AddControllers();
-        builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddScoped<ISkillService, SkillService>();
-        builder.Services.AddScoped<IProjectService, ProjectService>();
+        // Additional Services
+        services.AddControllers();
+        services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+        services.AddEndpointsApiExplorer();
+    }
 
-        var app = builder.Build();
-
-        // Configure the HTTP request pipeline
+    private static void ConfigureMiddleware(WebApplication app)
+    {
         if (app.Environment.IsDevelopment())
         {
             app.UseMigrationsEndPoint();
@@ -107,12 +105,10 @@ public class Program
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
-        app.UseCors("AllowBlazor");
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();
 
-        // Add the endpoints configuration here
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
@@ -121,6 +117,5 @@ public class Program
         });
 
         app.MapAdditionalIdentityEndpoints();
-        app.Run();
     }
-} 
+}
