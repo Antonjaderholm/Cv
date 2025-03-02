@@ -13,9 +13,7 @@ public class Labb3CVClient
 
     public async Task<List<Skill>> GetSkillsAsync()
     {
-        var response = await _httpClient.GetAsync(SkillsEndpoint);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<List<Skill>>() ?? new List<Skill>();
+        return await _httpClient.GetFromJsonAsync<List<Skill>>(SkillsEndpoint) ?? new List<Skill>();
     }
 
     public async Task<Skill> AddSkillAsync(Skill skill)
@@ -33,9 +31,7 @@ public class Labb3CVClient
 
     public async Task<List<Project>> GetProjectsAsync()
     {
-        var response = await _httpClient.GetAsync(ProjectsEndpoint);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<List<Project>>() ?? new List<Project>();
+        return await _httpClient.GetFromJsonAsync<List<Project>>(ProjectsEndpoint) ?? new List<Project>();
     }
 
     public async Task<Project> AddProjectAsync(Project project)
