@@ -9,8 +9,10 @@ public class Labb3CVClient
     public Labb3CVClient(HttpClient httpClient)
     {
         _httpClient = httpClient;
+        _httpClient.BaseAddress = new Uri("https://localhost:7160/");
     }
 
+    // Skills methods
     public async Task<List<Skill>> GetSkillsAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<Skill>>(SkillsEndpoint) ?? new List<Skill>();
@@ -29,6 +31,7 @@ public class Labb3CVClient
         response.EnsureSuccessStatusCode();
     }
 
+    // Projects methods
     public async Task<List<Project>> GetProjectsAsync()
     {
         return await _httpClient.GetFromJsonAsync<List<Project>>(ProjectsEndpoint) ?? new List<Project>();

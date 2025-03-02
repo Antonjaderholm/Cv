@@ -1,53 +1,40 @@
-﻿using Cv.Models;
-using Cv.Data;
-using Microsoft.Extensions.Logging;
+﻿using Cv.Data;
+using Cv.Models;
+using Cv.Services;
 
-namespace Cv.Services
+public class SkillService : ISkillService
 {
-    public class SkillService : ISkillService
+    private readonly MongoDbContext _context;
+
+    public SkillService(MongoDbContext context)
     {
-        private readonly MongoDbContext _context;
-        private readonly ILogger<SkillService> _logger;
+        _context = context;
+    }
 
-        public SkillService(MongoDbContext context, ILogger<SkillService> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+    public async Task<List<Skill>> GetSkillsAsync()
+    {
+        return await _context.GetAllSkills();
+    }
 
-        public async Task<List<Skill>> GetSkillsAsync()
-        {
-            Console.WriteLine("Fetching skills from MongoDB");
-            return await _context.GetAllSkills("CV.Skills");
-        }
+    public async Task<Skill> GetSkillByIdAsync(string id)
+    {
+        return await _context.GetSkillById(id);
+    }
 
-        public async Task<Skill> GetSkillByIdAsync(string id)
-        {
-            _logger.LogInformation($"Fetching skill with ID: {id}");
-            return await _context.GetSkillById("Skills", id);
-        }
+    public async Task<Skill> AddSkillAsync(Skill skill)
+    {
+        var skills = await _context.AddSkill(skill);
+        return skills.LastOrDefault();
+    }
 
-        public async Task<Skill> AddSkillAsync(Skill skill)
-        {
-            _logger.LogInformation($"Adding new skill: {skill.Name}");
-            var skills = await _context.AddSkill("Skills", skill);
-            _logger.LogInformation($"Successfully added skill: {skill.Name}");
-            return skill;
-        }
+    public async Task<Skill> UpdateSkillAsync(Skill skill)
+    {
+        var skills = await _context.UpdateSkill(skill.Id, skill);
+        return skills.FirstOrDefault(s => s.Id == skill.Id);
+    }
 
-        public async Task<Skill> UpdateSkillAsync(Skill skill)
-        {
-            _logger.LogInformation($"Updating skill: {skill.Name}");
-            var skills = await _context.UpdateSkill("Skills", skill.Id, skill);
-            _logger.LogInformation($"Successfully updated skill: {skill.Name}");
-            return skill;
-        }
-
-        public async Task DeleteSkillAsync(string id)
-        {
-            _logger.LogInformation($"Deleting skill with ID: {id}");
-            await _context.DeleteSkill("Skills", id);
-            _logger.LogInformation($"Successfully deleted skill with ID: {id}");
-        }
+    public async Task DeleteSkillAsync(string id)
+    {
+        await _context.DeleteSkill(id);
     }
 }
