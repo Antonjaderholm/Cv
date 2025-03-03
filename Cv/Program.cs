@@ -6,19 +6,16 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using Microsoft.AspNetCore.Mvc;
 
 public class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
         ConfigureServices(builder.Services, builder.Configuration);
-
         var app = builder.Build();
-
         ConfigureMiddleware(app);
-
         app.Run();
     }
 
@@ -43,6 +40,24 @@ public class Program
             client.BaseAddress = new Uri("https://localhost:7160/");
         });
         services.AddScoped<Labb3CVClient>();
+
+        // API Controllers Configuration
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+            });
+
+        // CORS Configuration
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin()
+                       .AllowAnyMethod()
+                       .AllowAnyHeader();
+            });
+        });
 
         // Identity and Authentication
         services.AddCascadingAuthenticationState();
@@ -84,8 +99,6 @@ public class Program
                 policy.RequireRole("ADMIN"));
         });
 
-        // Additional Services
-        services.AddControllers();
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
         services.AddEndpointsApiExplorer();
     }
@@ -105,17 +118,14 @@ public class Program
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRouting();
+        app.UseCors("AllowAll");
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseAntiforgery();
 
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-            endpoints.MapRazorComponents<App>()
-                .AddInteractiveServerRenderMode();
-        });
-
+        app.MapControllers();
+        app.MapRazorComponents<App>()
+            .AddInteractiveServerRenderMode();
         app.MapAdditionalIdentityEndpoints();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Cv.Models;
+﻿using System.Net.Http.Json;
+using Cv.Models;
 
 public class Labb3CVClient
 {
@@ -15,7 +16,14 @@ public class Labb3CVClient
     // Skills methods
     public async Task<List<Skill>> GetSkillsAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<Skill>>(SkillsEndpoint) ?? new List<Skill>();
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<List<Skill>>(SkillsEndpoint) ?? new List<Skill>();
+        }
+        catch
+        {
+            return new List<Skill>();
+        }
     }
 
     public async Task<Skill> AddSkillAsync(Skill skill)
@@ -34,7 +42,14 @@ public class Labb3CVClient
     // Projects methods
     public async Task<List<Project>> GetProjectsAsync()
     {
-        return await _httpClient.GetFromJsonAsync<List<Project>>(ProjectsEndpoint) ?? new List<Project>();
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<List<Project>>(ProjectsEndpoint) ?? new List<Project>();
+        }
+        catch
+        {
+            return new List<Project>();
+        }
     }
 
     public async Task<Project> AddProjectAsync(Project project)

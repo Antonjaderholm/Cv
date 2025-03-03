@@ -15,17 +15,17 @@ namespace Cv.Controllers
             _skillService = skillService;
         }
 
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            return Ok("API is working!");
+        }
+
         [HttpGet]
         public async Task<ActionResult<List<Skill>>> GetSkills()
         {
             var skills = await _skillService.GetSkillsAsync();
             return Ok(skills);
-        }
-
-        [HttpGet("test")]
-        public ActionResult<string> Test()
-        {
-            return Ok("API is working!");
         }
 
         [HttpPost]
