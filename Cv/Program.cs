@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using Microsoft.AspNetCore.Mvc;
+using CV.Services;
 
 public class Program
 {
@@ -100,7 +101,7 @@ public class Program
         services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
         services.AddEndpointsApiExplorer();
     }
-
+   
     private static void ConfigureMiddleware(WebApplication app)
     {
         if (app.Environment.IsDevelopment())
