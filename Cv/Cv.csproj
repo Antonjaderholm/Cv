@@ -15,4 +15,10 @@
     <PackageReference Include="MongoDB.Driver" Version="3.2.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="wwwroot\A.jpg">
+      <CopyToOutputDirectory>Copy</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

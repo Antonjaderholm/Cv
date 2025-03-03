@@ -16,9 +16,7 @@ public class Program
         ConfigureServices(builder.Services, builder.Configuration);
         var app = builder.Build();
         ConfigureMiddleware(app);
-        app.Run();
     }
-
     private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Core Services
@@ -127,5 +125,8 @@ public class Program
         app.MapRazorComponents<App>()
             .AddInteractiveServerRenderMode();
         app.MapAdditionalIdentityEndpoints();
+
+        // app.Run() should be the last line
+        app.Run();
     }
 }

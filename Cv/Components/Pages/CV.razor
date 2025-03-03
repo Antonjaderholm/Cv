@@ -5,47 +5,190 @@
 @inject IProjectService ProjectService
 @implements IDisposable
 
-<div class="hero-section">
-    <div class="profile-image">
-        <img src="~/A.jpg" alt="Anton Jäderholm" />
+<div class="cv-container">
+    <div class="hero-section">
+        <div class="profile-image">
+            <img src="/A.jpg" alt="Anton Jäderholm" />
+        </div>
+        <h1 class="name">Anton Jäderholm</h1>
+        <p class="title">Cloud/DevOps Engineer</p>
     </div>
-    <h1 class="name">Anton Jäderholm</h1>
-    <p class="title">Cloud/DevOps Engineer | Software Engineer</p>
+
+    <div class="section about-section">
+        <h2>About Me</h2>
+        <p class="bio">
+            I am studying to become a Cloud/DevOps engineer, focusing on building scalable cloud solutions and full-stack applications. Alongside my studies, I work as a Social Media Creator, leveraging my experience in content creation, video editing, and social media strategies. I also have extensive expertise in creating engaging content and managing digital platforms, gained through my work at Jaderholmmedia.
+
+            I thrive where technology meets creativity, combining my technical skills with a passion for innovation. Regardless it involves developing cloud-based solutions or crafting digital content, I am driven by a desire to grow, collaborate, and make a meaningful impact
+        </p>
+    </div>
+
+    <div class="section skills-section">
+        <h2>Core Skills</h2>
+        <div class="skills-grid">
+            @foreach (var skill in skills)
+            {
+                <SkillCard Skill="skill" />
+            }
+        </div>
+    </div>
+
+    <div class="section projects-section">
+        <h2>Featured Projects</h2>
+        <div class="project-grid">
+            @foreach (var project in projects)
+            {
+                <ProjectCard Project="project" />
+            }
+        </div>
+    </div>
+
+    <div class="section contact-section">
+        <h2>Connect</h2>
+        <div class="social-links">
+            <a href="https://github.com/Antonjaderholm" target="_blank" class="social-link">GitHub</a>
+            <a href="https://www.linkedin.com/in/anton-j%C3%A4derholm-a6b00b289/" target="_blank" class="social-link">LinkedIn</a>
+        </div>
+    </div>
 </div>
 
-<div class="about-section">
-    <h2>About Me</h2>
-    <p class="bio">Passionate software developer with a focus on creating efficient and scalable solutions. Driven by continuous learning and technological innovation.</p>
-</div>
+<style>
+    .cv-container {
+        background-color: #111111;
+        color: #916C2D;
+        min-height: 100vh;
+        padding: 2rem;
+    }
 
-<div class="skills-section">
-    <h2>Core Skills</h2>
-    <div class="skills-grid">
-        @foreach (var skill in skills)
-        {
-            <SkillCard Skill="skill" />
+    .hero-section {
+        text-align: center;
+        padding: 4rem 0;
+        background: linear-gradient(45deg, #111111, #222222);
+        border-bottom: 2px solid #916C2D;
+    }
+
+    .profile-image {
+        width: 180px;
+        height: 180px;
+        margin: 0 auto 2rem;
+        border-radius: 50%;
+        padding: 5px;
+        background: linear-gradient(45deg, #111111, #111111);
+    }
+
+        .profile-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
         }
-    </div>
-</div>
 
-<div class="projects-section">
-    <h2>Featured Projects</h2>
-    <div class="project-grid">
-        @foreach (var project in projects)
-        {
-            <ProjectCard Project="project" />
+    .name {
+        font-size: 2.8rem;
+        margin-bottom: 1rem;
+        color: #916C2D;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+
+    .title {
+        font-size: 1.2rem;
+        color: #E5E5E5
+        letter-spacing: 1px;
+    }
+
+    .bio {
+        color: #E5E5E5;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        margin-top: 1rem;
+    }
+    .section {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background: #1A1A1A;
+        border-radius: 10px;
+        border: 1px solid rgba(145, 108, 45, 0.3);
+    }
+
+    h2 {
+        color: #916C2D;
+        font-size: 2rem;
+        margin-bottom: 2rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, #916C2D, transparent);
         }
-    </div>
-</div>
 
-<div class="contact-section">
-    <h2>Connect</h2>
-    <div class="social-links">
-        <a href="https://github.com/Antonjaderholm" target="_blank" class="social-link">GitHub</a>
-        <a href="https://www.linkedin.com/in/anton-j%C3%A4derholm-a6b00b289/" target="_blank" class="social-link">LinkedIn</a>
-    </div>
-</div>
+    .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+    }
 
+    ::deep .skill-card {
+        background: #1A1A1A;
+        color: #000000;
+        padding: 1rem;
+        border: 1px solid #916C2D;
+        border-radius: 8px;
+    }
+
+    .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    ::deep .project-card {
+        background: #1A1A1A;
+        color: #000000;
+        padding: 1.5rem;
+        border: 1px solid #916C2D;
+        border-radius: 8px;
+    }
+
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+    }
+
+    .social-link {
+        padding: 0.8rem 2rem;
+        border: 2px solid #916C2D;
+        border-radius: 30px;
+        text-decoration: none;
+        color: #916C2D;
+        transition: all 0.3s ease;
+    }
+
+        .social-link:hover {
+            background: #916C2D;
+            color: #111111;
+            transform: translateY(-2px);
+        }
+
+    @@media (max-width: 768px) {
+        .name {
+            font-size: 2rem;
+        }
+
+        .section {
+            padding: 1.5rem;
+        }
+    }
+</style>
 @code {
     private List<Skill> skills = new();
     private List<Project> projects = new();

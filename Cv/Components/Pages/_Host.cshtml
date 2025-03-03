@@ -1,0 +1,18 @@
+﻿@page "/_Host"
+@using Cv.Components
+@using Microsoft.AspNetCore.Components.Web
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+    <link rel="stylesheet" href="css/cv.css" />
+    <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+</head>
+<body>
+    <component type="typeof(Routes)" render-mode="ServerPrerendered" />
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>

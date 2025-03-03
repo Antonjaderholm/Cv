@@ -3,11 +3,12 @@
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using Cv.Data
-
+@using Cv.Models // Lägg till detta om du har modeller för Skill och Project
 @inject UserManager<ApplicationUser> UserManager
 @inject SignInManager<ApplicationUser> SignInManager
 @inject IdentityUserAccessor UserAccessor
 @inject IdentityRedirectManager RedirectManager
+@inject Labb3CVClient Client // Injektera klienten för API-anrop
 
 <PageTitle>Profile</PageTitle>
 
@@ -16,7 +17,7 @@
 
 <div class="row">
     <div class="col-md-6">
-        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+        <EditForm Model="Input" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
@@ -31,6 +32,63 @@
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>
+
+    <div class="col-md-6">
+        <h4>Manage Skills</h4>
+        <EditForm Model="newSkill" OnValidSubmit="AddSkillAsync" method="post">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="mb-3">
+                <InputText @bind-Value="newSkill.Name" class="form-control" placeholder="Skill name" />
+                <InputNumber @bind-Value="newSkill.SkillLevel" class="form-control" placeholder="Skill level (1-5)" min="1" max="5" />
+                <button type="submit" class="btn btn-primary">Add Skill</button>
+            </div>
+        </EditForm>
+
+        <h5>Current Skills</h5>
+        @if (skills?.Any() == true)
+        {
+            foreach (var skill in skills)
+            {
+                <div class="card mb-2">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <span>@skill.Name (Level: @skill.SkillLevel)</span>
+                        <button @onclick="() => DeleteSkillAsync(skill.Id)" class="btn btn-danger btn-sm">Delete</button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="col-md-6">
+        <h4>Manage Projects</h4>
+        <EditForm Model="newProject" OnValidSubmit="AddProjectAsync" method="post">
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="mb-3">
+                <InputText @bind-Value="newProject.Title" class="form-control" placeholder="Project title" />
+                <InputText @bind-Value="newProject.Description" class="form-control" placeholder="Project description" />
+                <InputText @bind-Value="newProject.GitHubUrl" class="form-control" placeholder="GitHub URL" />
+                <button type="submit" class="btn btn-primary">Add Project</button>
+            </div>
+        </EditForm>
+
+        <h5>Current Projects</h5>
+        @if (projects?.Any() == true)
+        {
+            foreach (var project in projects)
+            {
+                <div class="card mb-2">
+                    <div class="card-body">
+                        <h5>@project.Title</h5>
+                        <p>@project.Description</p>
+                        <a href="@project.GitHubUrl" target="_blank">View on GitHub</a>
+                        <button @onclick="() => DeleteProjectAsync(project.Id)" class="btn btn-danger btn-sm float-end">Delete</button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
 </div>
 
 @code {
@@ -43,14 +101,20 @@
 
     [SupplyParameterFromForm]
     private InputModel Input { get; set; } = new();
+    private List<Skill> skills = new();
+    private List<Project> projects = new();
+    private Skill newSkill = new();
+    private Project newProject = new();
 
     protected override async Task OnInitializedAsync()
     {
         user = await UserAccessor.GetRequiredUserAsync(HttpContext);
         username = await UserManager.GetUserNameAsync(user);
         phoneNumber = await UserManager.GetPhoneNumberAsync(user);
-
         Input.PhoneNumber ??= phoneNumber;
+
+        skills = await Client.GetSkillsAsync();
+        projects = await Client.GetProjectsAsync();
     }
 
     private async Task OnValidSubmitAsync()
@@ -66,6 +130,38 @@
 
         await SignInManager.RefreshSignInAsync(user);
         RedirectManager.RedirectToCurrentPageWithStatus("Your profile has been updated", HttpContext);
+    }
+
+    private async Task AddSkillAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(newSkill.Name) && newSkill.SkillLevel >= 1 && newSkill.SkillLevel <= 5)
+        {
+            await Client.AddSkillAsync(newSkill);
+            skills = await Client.GetSkillsAsync(); // Reload skills
+            newSkill = new(); // Clear input
+        }
+    }
+
+    private async Task DeleteSkillAsync(string id)
+    {
+        await Client.DeleteSkillAsync(id);
+        skills = await Client.GetSkillsAsync(); // Reload skills
+    }
+
+    private async Task AddProjectAsync()
+    {
+        if (!string.IsNullOrWhiteSpace(newProject.Title))
+        {
+            await Client.AddProjectAsync(newProject);
+            projects = await Client.GetProjectsAsync(); // Reload projects
+            newProject = new(); // Clear input
+        }
+    }
+
+    private async Task DeleteProjectAsync(string id)
+    {
+        await Client.DeleteProjectAsync(id);
+        projects = await Client.GetProjectsAsync(); // Reload projects
     }
 
     private sealed class InputModel
