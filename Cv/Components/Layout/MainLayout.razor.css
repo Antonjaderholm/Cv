@@ -13,8 +13,8 @@ main {
 }
 
 .top-row {
-    background-color: #808080;
-    border-bottom: 1px solid #808080;
+    background-color: #ffffff;
+    border-bottom: 1px solid #ffffff;
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;
