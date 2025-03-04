@@ -22,8 +22,11 @@ public class Program
     {
         // Core Services
         services.AddRazorComponents()
-            .AddInteractiveServerComponents();
-
+         .AddInteractiveServerComponents()
+         .AddCircuitOptions(options =>
+         {
+             options.DetailedErrors = true;
+         });
         // MongoDB Configuration
         services.AddSingleton<IMongoClient>(sp =>
             new MongoClient(configuration.GetConnectionString("MONGODB_URI")));
@@ -124,10 +127,9 @@ public class Program
 
         app.MapControllers();
         app.MapRazorComponents<App>()
-            .AddInteractiveServerRenderMode();
+            .AddInteractiveServerRenderMode();  // Remove CircuitOptions here
         app.MapAdditionalIdentityEndpoints();
 
-        // app.Run() should be the last line
         app.Run();
     }
 }

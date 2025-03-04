@@ -14,6 +14,17 @@ public class Labb3CVClient
     }
 
     // Skills methods
+    public async Task<Skill> AddSkillAsync(Skill skill)
+    {
+        Console.WriteLine($"Sending request to add skill: {skill.Name}");
+        var response = await _httpClient.PostAsJsonAsync(SkillsEndpoint, skill);
+        Console.WriteLine($"Response status: {response.StatusCode}");
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<Skill>();
+        Console.WriteLine($"Skill added successfully with ID: {result.Id}");
+        return result;
+    }
+    // Skills methods
     public async Task<List<Skill>> GetSkillsAsync()
     {
         try
@@ -25,14 +36,7 @@ public class Labb3CVClient
             return new List<Skill>();
         }
     }
-
-    public async Task<Skill> AddSkillAsync(Skill skill)
-    {
-        var response = await _httpClient.PostAsJsonAsync(SkillsEndpoint, skill);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Skill>();
-    }
-
+   
     public async Task DeleteSkillAsync(string id)
     {
         var response = await _httpClient.DeleteAsync($"{SkillsEndpoint}/{id}");
@@ -40,6 +44,17 @@ public class Labb3CVClient
     }
 
     // Projects methods
+    public async Task<Project> AddProjectAsync(Project project)
+    {
+        Console.WriteLine($"Sending request to add project: {project.Title}");
+        var response = await _httpClient.PostAsJsonAsync(ProjectsEndpoint, project);
+        Console.WriteLine($"Response status: {response.StatusCode}");
+        response.EnsureSuccessStatusCode();
+        var result = await response.Content.ReadFromJsonAsync<Project>();
+        Console.WriteLine($"Project added successfully with ID: {result.Id}");
+        return result;
+    }
+
     public async Task<List<Project>> GetProjectsAsync()
     {
         try
@@ -51,14 +66,6 @@ public class Labb3CVClient
             return new List<Project>();
         }
     }
-
-    public async Task<Project> AddProjectAsync(Project project)
-    {
-        var response = await _httpClient.PostAsJsonAsync(ProjectsEndpoint, project);
-        response.EnsureSuccessStatusCode();
-        return await response.Content.ReadFromJsonAsync<Project>();
-    }
-
     public async Task DeleteProjectAsync(string id)
     {
         var response = await _httpClient.DeleteAsync($"{ProjectsEndpoint}/{id}");

@@ -1,9 +1,0 @@
-﻿@inject Labb3CVClient Client
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        var skills = await Client.GetSkillsAsync();
-        var projects = await Client.GetProjectsAsync();
-    }
-}
